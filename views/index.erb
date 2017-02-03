@@ -1,0 +1,79 @@
+<%if user%>
+<br>
+<h1>Hi <%= user.email %> at <%=time%></h1>
+<form action="/logout" method="get">
+<input type="submit" name="submit" value="Logout" style="float: right;margin-right: 30px;background: #8FBC8F;color: #fff;border: 1px solid #eee;border-radius: 20px;box-shadow: 5px 5px 5px #eee;">
+</form>
+
+<br>
+<div>
+<h3 style="padding-bottom: 0px">ADD POST: </h3>
+<div style="padding-top:20px">
+<form action="/add_post" method="post">;
+	<textarea name="content" rows="5" cols="50">what's in your mind!</textarea>
+	<input type="submit" value="POST">
+</form>
+</div>
+</div>
+<%if posts%>
+<% allfoll = Follow.all(:follower => user.id)%>
+<%puts "//////////// #{allfoll}"%>
+
+<%allF = []%>
+<%allfoll.each do |follo|%>
+<%allF << follo.following%>
+<%end%>
+<%puts "----------this prints the post of follwing user first --------#{allF}"%>
+<% allFpost = Post.all(:user_id => allF).reverse%>
+<%allFpost.each do |post|%>
+
+<div style="background-color: #f0f2bc ;margin: 5px;padding: 20px; border-radius: 40px">
+<div>
+<a href="/open_profile/<%=User.get(post.user_id).id%>" style="margin-left: 50px;display: inline-block;      
+  font-family:Arial;
+  font-size:20px;"><%=User.get(post.user_id).name%></a>
+<span style="text-align: right;"><p><%=post.time%></p></span>
+</div>
+<div style="padding: 15px">
+<p style="margin-right: 150px; text-align: center;font-size: 1.5em"><span><i class="fa fa-quote-left" aria-hidden="true"></i></span>
+	<%="#{post.content}"%><span><i class="fa fa-quote-right" aria-hidden="true"></i></span>
+</p>
+<div>
+<span><%=post.likes%></span>
+<%puts "**********************************************#{post.id}"%>
+	<a href="/like/<%=post.id%>"><span><i class="fa fa-thumbs-up" aria-hidden="true"></i></span> Like</a>
+</div>
+<form action="/unfoll" method="post">
+	<input type="hidden" name="unfollowH" value="<%=post.user_id%>">
+	<input type="submit" name="submit" value="UNFOLLOW" style="float: right;background: #8FBC8F;color: #fff;border: 1px solid #eee;border-radius: 20px;box-shadow: 5px 5px 5px #eee;">
+</form>
+</div></div>
+
+<%end%>
+<%remainingPost = Post.all(:user_id.not => allF).reverse%>
+<% remainingPost.each do |post|%>
+<div style="background-color: #f0f2bc ;margin: 5px;padding: 20px; border-radius: 40px">
+<div>
+<a href="/open_profile/<%=User.get(post.user_id).id%>"  style="margin-left: 50px;display: inline-block;      
+  font-family:Arial;
+  font-size:20px;"><%=User.get(post.user_id).name%></a>
+<span style="text-align: right;"><p><%=post.time%></p></span>
+</div>
+<div style="padding: 15px">
+<p style="margin-right: 150px;text-align: center;font-size: 1.5em"><span><i class="fa fa-quote-left" aria-hidden="true"></i></span>
+	<%="#{post.content}"%><span><i class="fa fa-quote-right" aria-hidden="true"></i></span>
+</p>
+<div>
+<span><%=post.likes%></span>
+<%puts "**********************************************#{post.id}"%>
+	<a href="/like/<%=post.id%>"><span><i class="fa fa-thumbs-up" aria-hidden="true"></i></span> Like</a>
+</div>
+<form action="/foll" method="post">
+	<input type="hidden" name="followH" value="<%=post.user_id%>">
+	<input type="submit" name="submit" value="FOLLOW" style="float: right;background: #8FBC8F;color: #fff;border: 1px solid #eee;border-radius: 20px;box-shadow: 5px 5px 5px #eee;">
+</form>
+</div></div>
+<%end%>
+<%end%>
+
+<%end%>
